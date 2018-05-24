@@ -1,9 +1,8 @@
 import filecmp
-
-import Takuzu
+import binero_fnc
 
 def compare_solutions(fname1, fname2):
     return filecmp.cmp(fname1, fname2, shallow=False)
 
-tak = Takuzu.Takuzo("petit_binero")
+tak = binero_fnc.Binero_fnc("mini")
 tak.solve()

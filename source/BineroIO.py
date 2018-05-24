@@ -43,5 +43,9 @@ def write_binero(filename, grid):
 def read_dimacs(filename):
     pass
 
-def write_dimacs(filename):
-    pass
+def write_dimacs(filename, conditions):
+    out = open(filename, "w")
+    out.writelines("c\n" + "c %s\n" + "c\n" % filename)
+    for row in grid:
+        out.writelines(str(row) + "\n")
+    outputfile.close()
