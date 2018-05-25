@@ -46,18 +46,21 @@ class Binero_fnc:
                     result.append([var])
                 elif self.input_grid[i][j] == False:
                     result.append([-var])
+        return result
 
     def solve(self):
         self.boundary_conditions()
         n = len(self.input_grid)
-        BineroIO.write_dimacs(self.PATH + "/dataIn/" + self.filename + ".dimacs", 
-                    condition1(n) + condition2(n) + condition3(n))
+        conditions = self.boundary_conditions() + condition1(n) + condition2(n) + condition3(n)
+        BineroIO.write_dimacs(
+            self.PATH + "/output/" + self.filename + ".dimacs", 
+            conditions)
 
 def condition1(n):
     result = []
-    #first we create a matrix which holds all the possible lines (that have as many 0 as 1)
-    #we replace the 0 by -1
-    #a recursive function builds the lines
+    # first we create a matrix which holds all the possible lines (that have as many 0 as 1)
+    # we replace the 0 by -1
+    # a recursive function builds the lines
     possible_lines = []
     def possible(i, j, line):
         #i is the length of the line, j the number of 1.
@@ -102,12 +105,7 @@ def condition2(n):
            result.append([-(n*i+j+1), -(n*i+j+2), -(n*i+j+3)])
 
     return(result)
-<<<<<<< HEAD
-           
-           
-=======
 
->>>>>>> locmod2
 def condition3(n):
     result = []
     #pas 2 lignes pareilles 

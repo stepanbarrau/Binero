@@ -45,7 +45,15 @@ def read_dimacs(filename):
 
 def write_dimacs(filename, conditions):
     out = open(filename, "w")
-    out.writelines("c\n" + "c %s\n" + "c\n" % filename)
-    for row in grid:
-        out.writelines(str(row) + "\n")
-    outputfile.close()
+    # comment
+    out.writelines("c\n" + "c " + filename + "\n" + "c\n")
+    # entete
+    out.writelines("p cnf " 
+        + str(max([max(row) for row in conditions])) + " "
+        + str(len(conditions)) + "\n")
+    # clauses
+    for cond in conditions:
+        for var in cond:
+            out.writelines(str(var) + " ")
+        out.writelines("0\n")
+    out.close()
