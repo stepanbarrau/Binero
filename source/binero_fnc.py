@@ -6,9 +6,52 @@ Created on Thu May 24 16:18:15 2018
 """
 
 #Xij = Xn*i+j+1 
+import os
+
 import itertools as it
 import numpy as np
 
+
+import BineroIO
+
+class Binero_fnc:
+
+    input_grid = None
+    filename = None
+    # abs path of project folder
+    PATH = None
+
+    def __init__(self, filename):
+        #
+        self.filename = filename
+        # abs path of this file
+        self.PATH = os.path.dirname(os.path.abspath(__file__))
+        # trim file name
+        last_slash = 0
+        for i, char in enumerate(self.PATH):
+            if char == "/":
+                last_slash = i
+        self.PATH = self.PATH[:last_slash]
+        # dataIn file abs path
+        filename = self.PATH + "/dataIn/" + filename
+        self.input_grid = BineroIO.read_binero(filename)
+
+    def boundary_conditions(self):
+        result = []
+        n = len(self.input_grid)
+        for i in range(n):
+            for j in range(n):
+                var = i * n + j + 1
+                if self.input_grid[i][j] == True:
+                    result.append([var])
+                elif self.input_grid[i][j] == False:
+                    result.append([-var])
+
+    def solve(self):
+        self.boundary_conditions()
+        n = len(self.input_grid)
+        BineroIO.write_dimacs(self.PATH + "/dataIn/" + self.filename + ".dimacs", 
+                    condition1(n) + condition2(n) + condition3(n))
 
 def condition1(n):
     result = []
@@ -30,7 +73,7 @@ def condition1(n):
             possible(i+1, j+1, line+[1])
     #we launch the function
     possible(0,0,[])
-    
+
     #now we use it to create the fnc formula for the lines
     for nline in range(n):
         #nline is the number of the line
@@ -39,7 +82,7 @@ def condition1(n):
             for i in range(len(combi)):
                 clause = clause+[(n*nline+combi[i]+1)*possible_lines[i][combi[i]]]
             result.append(clause)
-    
+
     #now we use it to create the fnc formula for the columns
     for ncol in range(n):
         #ncol is the number of the line
@@ -50,9 +93,7 @@ def condition1(n):
             result.append(clause)
     
     return(result)
-        
-        
-        
+
 def condition2(n):
     result = []
     for i in range(n):
@@ -61,8 +102,12 @@ def condition2(n):
            result.append([-(n*i+j+1), -(n*i+j+2), -(n*i+j+3)])
 
     return(result)
+<<<<<<< HEAD
            
            
+=======
+
+>>>>>>> locmod2
 def condition3(n):
     result = []
     #pas 2 lignes pareilles 
@@ -90,4 +135,3 @@ def condition3(n):
                     result.append(clause)
                     
     return(result)
-
