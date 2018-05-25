@@ -43,5 +43,17 @@ def write_binero(filename, grid):
 def read_dimacs(filename):
     pass
 
-def write_dimacs(filename):
-    pass
+def write_dimacs(filename, conditions):
+    out = open(filename, "w")
+    # comment
+    out.writelines("c\n" + "c " + filename + "\n" + "c\n")
+    # entete
+    out.writelines("p cnf " 
+        + str(max([max(row) for row in conditions])) + " "
+        + str(len(conditions)) + "\n")
+    # clauses
+    for cond in conditions:
+        for var in cond:
+            out.writelines(str(var) + " ")
+        out.writelines("0\n")
+    out.close()

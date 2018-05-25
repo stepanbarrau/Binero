@@ -7,16 +7,61 @@ Created on Thu May 24 16:18:15 2018
 
 #Xij = n*i+j+1 
 #Yi i' j' = (i+1)*n**2 + n*i' + j' + 1 si i est une ligne
-#Yj i' j' = (n+j+1)*n**2 + n*i' + j' + 1 si i est une colone
+#Yj i' j' = (n+j+1)*n**2 + n*i' + j' + 1 si i est une colone 
+import os
+
 import itertools as it
 import numpy as np
 
+import BineroIO
+
+class Binero_fnc:
+
+    input_grid = None
+    filename = None
+    # abs path of project folder
+    PATH = None
+
+    def __init__(self, filename):
+        #
+        self.filename = filename
+        # abs path of this file
+        self.PATH = os.path.dirname(os.path.abspath(__file__))
+        # trim file name
+        last_slash = 0
+        for i, char in enumerate(self.PATH):
+            if char == "/":
+                last_slash = i
+        self.PATH = self.PATH[:last_slash]
+        # dataIn file abs path
+        filename = self.PATH + "/dataIn/" + filename
+        self.input_grid = BineroIO.read_binero(filename)
+
+    def boundary_conditions(self):
+        result = []
+        n = len(self.input_grid)
+        for i in range(n):
+            for j in range(n):
+                var = i * n + j + 1
+                if self.input_grid[i][j] == True:
+                    result.append([var])
+                elif self.input_grid[i][j] == False:
+                    result.append([-var])
+        return result
+
+    def solve(self):
+        self.boundary_conditions()
+        n = len(self.input_grid)
+        conditions = self.boundary_conditions() + condition1(n) + condition2(n) + condition3(n)
+        BineroIO.write_dimacs(
+            self.PATH + "/output/" + self.filename + ".dimacs", 
+            conditions)
 
 def condition1pourri(n):
     result = []
-    #first we create a matrix which holds all the possible lines (that have as many 0 as 1)
-    #we replace the 0 by -1
-    #a recursive function builds the lines
+    # first we create a matrix which holds all the possible lines (that have as many 0 as 1)
+    # we replace the 0 by -1
+    # a recursive function builds the lines
     possible_lines = []
     def possible(i, j, line):
         #i is the length of the line, j the number of 1.
@@ -33,6 +78,7 @@ def condition1pourri(n):
     #we launch the function
     possible(0,0,[])
     print len(possible_lines)
+    
     #now we use it to create the fnc formula for the lines
     for nline in range(n):
         #nline is the number of the line
@@ -41,7 +87,7 @@ def condition1pourri(n):
             for i in range(len(combi)):
                 clause = clause+[(n*nline+combi[i]+1)*possible_lines[i][combi[i]]]
             result.append(clause)
-    
+
     #now we use it to create the fnc formula for the columns
     for ncol in range(n):
         #ncol is the number of the line
@@ -55,7 +101,6 @@ def condition1pourri(n):
     
 def condition1(n):
     result = []
-    
     #the function order creates clauses so that y1 y2 is x1 x2 but ordered
     def ordre(x1,x2,y1,y2):
         result = [[-y1, x1, x2],
@@ -103,10 +148,6 @@ def condition1(n):
         
     return(result)
 
-
-
-    
-        
 def condition2(n):
     result = []
     #lignes
@@ -123,9 +164,7 @@ def condition2(n):
            result.append([-(n*i+j+1), -(n*(i+1)+j+1), -(n*(i+2)+j+1)])
           
     return(result)
-    
-    
-           
+
 def condition3(n):
     result = []
     #pas 2 lignes pareilles 
@@ -153,4 +192,3 @@ def condition3(n):
                     result.append(clause)
                     
     return(result)
-
