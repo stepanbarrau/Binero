@@ -63,17 +63,31 @@ def condition2(n):
     return(result)
            
            
-def condition3(M):
+def condition3(n):
     result = []
-    n = len(M)
     #pas 2 lignes pareilles 
     #i et j représentent les numéros de deux lignes
     for i in range(n):
         for j in range(n):
-            for combi in it.product([-1,1], repeat = n):
-                clause = []
-                for i in range(len(combi)):
-                    clause = clause + []
+            if i<j:
+                for combi in it.product([-1,1], repeat = n):
+                    clause = []
+                    #k represente le numéro de la case qu'on considère, au sein de la ligne
+                    for k in range(n):
+                        clause = clause + [combi[k]*(i*n+k+1), combi[k]*(j*n+k+1)]
+                    result.append(clause)
 
-
+    #pas 2 colones pareilles 
+    #i et j représentent les numéros de deux colones
+    for i in range(n):
+        for j in range(n):
+            if i<j:
+                for combi in it.product([-1,1], repeat = n):
+                    clause = []
+                    #k represente le numéro de la case qu'on considère, au sein de la colone
+                    for k in range(n):
+                        clause = clause + [combi[k]*(k*n+i+1), combi[k]*(k*n+j+1)]
+                    result.append(clause)
+                    
+    return(result)
 
